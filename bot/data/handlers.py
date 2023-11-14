@@ -20,6 +20,7 @@ router = Router()
 
 from bot.Chat.AccountManager import AccountManager
 from bot.Chat.User import User
+from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
 manager = AccountManager()
 
@@ -32,6 +33,11 @@ class GetProductInfo(StatesGroup):
 
 @router.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
+    # if message.from_user.id == 863813900:
+    if message.from_user.id == 1302324252:
+        manager.add_admin(admin=Administrator(info=message.from_user))
+    else:
+        manager.add_user(user=User(info=message.from_user))
     await message.answer(
         text=text.greet.format(name=message.from_user.full_name),
         reply_markup=kb.keyboard1
@@ -51,7 +57,8 @@ async def act_chosen(message: Message, state: FSMContext):
         await message.answer(text=text.get_category, reply_markup=kb.categories2)
         await state.set_state(GetProductInfo.choosing_category)
     if message.text == '🙋‍♀️ Обратиться к консультанту':
-        await message.answer(text.get_help, reply_markup=kb.help_keyboard)
+        # await message.answer(text.get_help, reply_markup=kb.help_keyboard)
+        await message.answer(text.get_help, reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(GetProductInfo.get_help)
 
 
@@ -146,6 +153,7 @@ async def start_handler(message: Message):
 @router.message(F.text)
 async def get_help(message: Message, bot: Bot):
     """Помощь от консультанта"""
+    print("here 10")
     if message.text == strings.get_help1:
         user = manager.get_user(info=message.from_user)
         if user is None:
@@ -159,19 +167,20 @@ async def get_help(message: Message, bot: Bot):
         return
 
 
-    if not manager.admins_contains_id(user_id=863813900) and message.from_user.id == 863813900:
-        manager.add_admin(admin=message.from_user)
-
     if manager.is_admin_with_adding(info=message.from_user):
         # Сообщение от админа
         admin = manager.get_admin(info=message.from_user)
+        print("here 1")
         if admin.selected_user is None:
+            print('user is None')
             return
 
         if len(admin.new_messages) > 0:
+            print("here 3")
             chatmates = admin.new_chatmates()
             switch_button = InlineKeyboardButton(text="Все переписки", callback_data="all_chatmates")
         else:
+            print("here 4")
             chatmates = admin.all_chatmates()
             switch_button = InlineKeyboardButton(text="Новые сообщения", callback_data="new_messages")
 
@@ -183,6 +192,7 @@ async def get_help(message: Message, bot: Bot):
         await bot.send_message(chat_id=user.info.id, text=Formatter.new_messages_count(len(user.new_messages)), reply_markup=kb.user_show_message())
     else:
         # Сообщение от юзверя
+        print("here 2")
         user = manager.get_user(info=message.from_user)
         if user is None or not user.in_chat:
             return
@@ -282,3 +292,7 @@ async def user_show_new_message(callback_query: types.CallbackQuery, bot: Bot):
     message_id = callback_query.message.message_id
     await bot.delete_message(chat_id=user.info.id, message_id=message_id)
     await bot.send_message(chat_id=user.info.id, text=chat_history)
+
+@router.message()
+async def general_handler(callback_query: types.CallbackQuery, bot: Bot):
+    print(callback_query.message.text)
