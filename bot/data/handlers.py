@@ -141,15 +141,6 @@ async def product_name_chosen_incorrectly(message: Message, state: FSMContext):
     await state.set_state(GetProductInfo.choosing_category)
     await message.answer(text='Пожалуйста, выберите название товара: ', reply_markup=kb.categories2)
 
-
-@router.message(Command('start'))
-async def start_handler(message: Message):
-    user = manager.get_user(info=message.from_user)
-    if user is not None:
-        user.in_chat = False
-    await message.answer(strings.greet.format(name=message.from_user.full_name), reply_markup=kb.keyboard1)
-
-
 @router.message(F.text)
 async def get_help(message: Message, bot: Bot):
     """Помощь от консультанта"""
