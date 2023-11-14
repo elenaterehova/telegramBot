@@ -40,6 +40,7 @@ class Cache(CacheInterface):
         super().__init__()
         self.categories_names = None
         self.product_names = None
+        self.__products = {}
 
     # Получение всех товаров (возвращается словарь)
     @lru_cache(maxsize=256)
@@ -76,15 +77,19 @@ class Cache(CacheInterface):
         return categories_names_list
 
     # Получение товара по названию(возвращает словарь)
-    @lru_cache(maxsize=256)
+    # @lru_cache(maxsize=256)
     def getProductByName(self, name):
+        if name in self.__products.keys() and type(self.__products[name]) is URLInputFile:
+            return self.__products[name]
+
         data = Cache.getInfoFromDB(self)
         results = data['results']
         for item in results:
             if name == item['properties']['Name']['title'][0]['text']['content']:
                 url = item['properties']['Instructions']['files'][0]['file']['url']
-                #photo = URLInputFile(url)
-                return url
+                photo = URLInputFile(url)
+                self.__products[name] = photo
+                return photo
 
 
     @property
