@@ -23,7 +23,16 @@ iexit_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='◀
 def admin_users_list_keyboard(users: [User], admin: Administrator, switch_button: InlineKeyboardButton) -> InlineKeyboardMarkup:
     keyboard_buttons = []
     for user in users:
-        button = [InlineKeyboardButton(text=user.info.first_name + ' ' + user.info.last_name, callback_data=f"chatmate chat_id={user.info.id};admin_id={admin.info.id}")]
+        first_name = user.info.first_name
+        last_name = user.info.last_name
+        row = ""
+        if first_name is not None:
+            row += first_name
+        if last_name is not None:
+            row += " " + last_name
+        if first_name is None and last_name is None:
+            row = "Unknown"
+        button = [InlineKeyboardButton(text=row, callback_data=f"chatmate chat_id={user.info.id};admin_id={admin.info.id}")]
         keyboard_buttons.append(button)
     keyboard_buttons.append([switch_button])
     exit_button = [InlineKeyboardButton(text="Назад", callback_data="unselect_user")]

@@ -7,7 +7,7 @@ class User:
         self.is_admin = False
         self.chat_history = []
         self.new_messages = []
-        self.in_chat = False
+        self.in_chat = True
 
     def new_message_from_admin(self, message: string, sender):
         chat_message = ChatHistory(message=message, sender=sender, receiver=self)

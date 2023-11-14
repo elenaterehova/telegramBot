@@ -13,15 +13,19 @@ class AccountManager:
         if len(list(filter(lambda x: x.info.id != user.info.id, self.users))) > 0:
             return
 
-        # Если это админ
-        if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
-            return
+        # # Если это админ
+        # if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
+        #     return
         self.users.append(user)
 
     def admins_contains_id(self, user_id) -> bool:
         return len(list(filter(lambda x: user_id == x.info.id, self.admins))) > 0
-    def add_admin(self, admin):
-        self.admins.append(Administrator(info=admin))
+    def add_admin(self, admin: Administrator):
+        # Если админ уже есть
+        if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
+            return
+
+        self.admins.append(admin)
 
     def is_admin(self, info) -> bool:
         return len(list(filter(lambda x: info.id == x.info.id, self.admins))) > 0
