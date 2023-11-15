@@ -14,7 +14,11 @@ categories2 = [[KeyboardButton(text=item)]for item in categories]
 categories2.append([KeyboardButton(text=strings.exit_button)])
 categories2.append([KeyboardButton(text=strings.get_help1)])
 
+help_keyboard = [
+    [KeyboardButton(text='⏪ Выйти назад')]
+]
 
+help_keyboard = ReplyKeyboardMarkup(keyboard=help_keyboard, resize_keyboard=True)
 keyboard1 = ReplyKeyboardMarkup(keyboard=keyboard1, resize_keyboard=True)
 categories2 = ReplyKeyboardMarkup(keyboard=categories2, resize_keyboard=True)
 exit_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=strings.to_menu_button)]], resize_keyboard=True)

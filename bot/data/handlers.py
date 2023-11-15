@@ -50,6 +50,13 @@ async def help_command(message: Message, state: FSMContext):
                          reply_markup=kb.help_keyboard)
     await state.set_state(GetProductInfo.get_help)
 
+@router.message(GetProductInfo.get_help, F.text == '⏪ Выйти назад')
+async def back(message: Message, state: FSMContext):
+    if message.text == '⏪ Выйти назад':
+        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+                             reply_markup=kb.keyboard1)
+        await state.set_state(GetProductInfo.choosing_act)
+
 # Пользователь выбирает действие (state: choosing_act)
 @router.message(GetProductInfo.choosing_act)
 async def act_chosen(message: Message, state: FSMContext):
