@@ -1,5 +1,11 @@
-import string
+# Класс ChatHistory
+# Назначение: хранит информацию о сообщении
+# Поля:
+#   – message: сообщения
+#   – sender: отправитель
+#   – reveiver: получатель
 
+import string
 
 class ChatHistory:
     def __init__(self, message, sender, receiver):

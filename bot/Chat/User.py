@@ -1,3 +1,22 @@
+# Класс User
+# Назначение: хранит информацию о юзере, историю переписки и вспомогательные методы
+# Поля:
+#   – info: информация из телеги
+#   – chat_history: абсолютно все сообщения
+#   – new_messages: только новые сообщения
+# Методы:
+#   – new_message_from_admin(self, message: string, sender):
+#        Получает сообщение 'message' от администратора и добавляет в new_messages
+#
+#   – send_message(self, message: string, to_admin):
+#         Отправляет сообщение 'message' выбранному администратору
+#
+#   – chat_with_admin(self) -> string:
+#        Полный чат с администратором. Сразу читает все новые сообщения
+#
+#   – show_new_messages(self, admin_id) -> string:
+#         Только новые сообщения от администратора
+
 import string
 from bot.Chat.ChatHistory import ChatHistory
 
