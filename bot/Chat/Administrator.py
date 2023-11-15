@@ -1,3 +1,34 @@
+# Класс Administrator
+# Назначение: хранит информацию об администраторе, историю переписки и вспомогательные методы
+# Поля:
+#   – info: информация из телеги
+#   – chat_history: абсолютно все сообщения
+#   – new_messages: только новые сообщения
+#   – selected_user: выбранный пользователь
+# Методы:
+#   – new_message_from_user(self, message: string, sender):
+#       Добавляет сообщение от пользователя в new_messages
+#
+#   – send_message(self, message: string, to_user):
+#       Отправляет сообщение пользователю и читает все новые сообщения
+#
+#   – chat_with_user(self) -> string:
+#       Полный чат с пользователем (selected_user)
+#
+#   – show_new_messages(self) -> string:
+#       Только новые сообщения от выбранного пользователя (selected_user)
+#
+#   – all_chatmates(self):
+#       Все юзеры, с которыми переписывался администратор
+#
+#   – new_chatmates(self):
+#       Только новые юзеры
+#
+#   – select_user(self, user):
+#       Выбор пользователя, чтобы посмотреть диалог или ответить
+#
+#   – unselect_user(self):
+#
 import string
 
 from bot.Chat.ChatHistory import ChatHistory
