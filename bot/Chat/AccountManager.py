@@ -50,9 +50,8 @@ class AccountManager:
 
     def add_admin(self, admin: Administrator):
         # Если админ уже есть
-        if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
+        if len(list(filter(lambda x: x.admin.id != admin.info.id, self.admins))) > 0:
             return
-
         self.admins.append(admin)
 
     def admins_contains_id(self, user_id) -> bool:

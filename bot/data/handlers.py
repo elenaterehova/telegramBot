@@ -24,24 +24,31 @@ from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
 manager = AccountManager()
 
+
 # Состояния пользователя
 class GetProductInfo(StatesGroup):
     choosing_act = State()
     choosing_category = State()
     choosing_product_name = State()
     get_help = State()
+    add_admin = State()
+
+#admin = Administrator(info=1302324252)
+#add_main_admin = manager.add_admin(admin=admin)
+
 
 @router.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
-    # if message.from_user.id == 863813900:
-    if message.from_user.id == 1302324252:
-        manager.add_admin(admin=Administrator(info=message.from_user))
+    if message.from_user.id == 1302324252 or manager.is_admin(info=message.from_user):
+        await message.answer(text=text.greet.format(name=message.from_user.full_name), reply_markup=kb.keyboard1_admin)
+        await state.set_state(GetProductInfo.add_admin)
     else:
         manager.add_user(user=User(info=message.from_user))
-    await message.answer(
-        text=text.greet.format(name=message.from_user.full_name),
-        reply_markup=kb.keyboard1
-    )
+        # print(manager.admins_contains_id(user_id=admin.info))
+        await message.answer(
+            text=text.greet.format(name=message.from_user.full_name),
+            reply_markup=kb.keyboard1
+        )
     await state.set_state(GetProductInfo.choosing_act)
 
 @router.message(Command("help"))
@@ -50,6 +57,18 @@ async def help_command(message: Message, state: FSMContext):
                          reply_markup=kb.help_keyboard)
     await state.set_state(GetProductInfo.get_help)
 
+@router.message(F.text == strings.add_admin)
+async def add_admin_id(message: Message, bot: Bot, state: FSMContext):
+    await message.answer(text='Чтобы добавить администратора, введите ID:', reply_markup=None)
+    await state.set_state(GetProductInfo.add_admin)
+
+@router.message(GetProductInfo.add_admin, F.text)
+async def added_admin_id(message: Message, bot: Bot, state: FSMContext):
+    user = manager.get_user_by_id(message.text)
+    manager.add_admin(admin=Administrator(info=user))
+    if User is None:
+        await message.answer(text='Пользователь не найден')
+    await message.answer(text='Пользователь добавлен в Администраторы.', reply_markup=None)
 @router.message(GetProductInfo.get_help, F.text == '⏪ Выйти назад')
 async def back(message: Message, state: FSMContext):
     if message.text == '⏪ Выйти назад':

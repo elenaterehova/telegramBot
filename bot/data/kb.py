@@ -8,6 +8,11 @@ keyboard1 = [
     [KeyboardButton(text=strings.get_instruction)],
     [KeyboardButton(text=strings.get_help1)],
 ]
+keyboard1_admin = [
+    [KeyboardButton(text=strings.get_instruction)],
+    [KeyboardButton(text=strings.get_help1)],
+    [KeyboardButton(text=strings.add_admin)],
+]
 
 categories = storage_class.getCategories()
 categories2 = [[KeyboardButton(text=item)]for item in categories]
@@ -20,6 +25,7 @@ help_keyboard = [
 
 help_keyboard = ReplyKeyboardMarkup(keyboard=help_keyboard, resize_keyboard=True)
 keyboard1 = ReplyKeyboardMarkup(keyboard=keyboard1, resize_keyboard=True)
+keyboard1_admin = ReplyKeyboardMarkup(keyboard=keyboard1_admin, resize_keyboard=True, one_time_keyboard=True)
 categories2 = ReplyKeyboardMarkup(keyboard=categories2, resize_keyboard=True)
 exit_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=strings.to_menu_button)]], resize_keyboard=True)
 iexit_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=strings.to_menu_button, callback_data='menu')]])
