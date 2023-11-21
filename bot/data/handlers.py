@@ -22,6 +22,7 @@ from bot.Chat.AccountManager import AccountManager
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
+
 manager = AccountManager()
 
 
@@ -32,24 +33,32 @@ class GetProductInfo(StatesGroup):
     choosing_product_name = State()
     get_help = State()
     add_admin = State()
+    delete_admin = State()
 
-#admin = Administrator(info=1302324252)
-#add_main_admin = manager.add_admin(admin=admin)
 
+# admin = Administrator(info=1302324252)
+# add_main_admin = manager.add_admin(admin=admin)
 
 @router.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
-    if message.from_user.id == 1302324252 or manager.is_admin(info=message.from_user):
-        await message.answer(text=text.greet.format(name=message.from_user.full_name), reply_markup=kb.keyboard1_admin)
+    if not manager.is_user(info=message.from_user):
+        manager.add_user(user=User(info=message.from_user))
+        print(manager.users)
+    if not manager.is_admin(info=manager.get_user_by_id(int(1302324252)).info):
+        manager.add_admin(admin=Administrator(info=manager.get_user_by_id(int(1302324252)).info))
+
+    if manager.is_admin(info=message.from_user):
+        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+                             reply_markup=kb.keyboard1_admin)
         await state.set_state(GetProductInfo.add_admin)
     else:
-        manager.add_user(user=User(info=message.from_user))
-        # print(manager.admins_contains_id(user_id=admin.info))
         await message.answer(
             text=text.greet.format(name=message.from_user.full_name),
             reply_markup=kb.keyboard1
         )
-    await state.set_state(GetProductInfo.choosing_act)
+        await state.set_state(GetProductInfo.choosing_act)
+    print(manager.admins)
+
 
 @router.message(Command("help"))
 async def help_command(message: Message, state: FSMContext):
@@ -57,24 +66,51 @@ async def help_command(message: Message, state: FSMContext):
                          reply_markup=kb.help_keyboard)
     await state.set_state(GetProductInfo.get_help)
 
+
 @router.message(F.text == strings.add_admin)
 async def add_admin_id(message: Message, bot: Bot, state: FSMContext):
     await message.answer(text='Чтобы добавить администратора, введите ID:', reply_markup=None)
     await state.set_state(GetProductInfo.add_admin)
 
-@router.message(GetProductInfo.add_admin, F.text)
+@router.message(F.text == strings.admins_list)
+async def show_admins_list(message: Message, bot: Bot, state: FSMContext):
+    if message.text == strings.admins_list:
+        admins_names = ''
+        for admin in manager.admins:
+            admins_names += admin.info.full_name
+        print(admins_names)
+        await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
+                             reply_markup=kb.keyboard2_admin)
+@router.message(GetProductInfo.add_admin)
 async def added_admin_id(message: Message, bot: Bot, state: FSMContext):
-    user = manager.get_user_by_id(message.text)
-    manager.add_admin(admin=Administrator(info=user))
-    if User is None:
+    try:
+        if manager.is_admin(info=manager.get_user_by_id(id=int(message.text)).info):
+            await message.answer(text='Пользователь уже является Администратором.')
+        else:
+            manager.add_admin(admin=Administrator(info=manager.get_user_by_id(id=int(message.text)).info))
+            await message.answer(text='Пользователь добавлен в Администраторы.', reply_markup=None)
+    except Exception as e:
         await message.answer(text='Пользователь не найден')
-    await message.answer(text='Пользователь добавлен в Администраторы.', reply_markup=None)
+        print(e)
+        print(message.text)
+    await state.clear()
+
+@router.message(F.text == strings.delete_admin)
+async def delete_admin(message: Message, bot: Bot, state: FSMContext):
+    await message.answer(text='Введите ID Администратора, которого хотите удалить: ', reply_markup=None)
+
+@router.message(GetProductInfo.delete_admin)
+async def added_delete_id(message: Message, bot: Bot, state: FSMContext):
+    id = int(message.text)
+    manager.admins.remove(manager.get_admin_by_id(id=id))
+    await message.answer(text='Админситратор удален.')
 @router.message(GetProductInfo.get_help, F.text == '⏪ Выйти назад')
 async def back(message: Message, state: FSMContext):
     if message.text == '⏪ Выйти назад':
         await message.answer(text=text.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1)
         await state.set_state(GetProductInfo.choosing_act)
+
 
 # Пользователь выбирает действие (state: choosing_act)
 @router.message(GetProductInfo.choosing_act)
@@ -157,6 +193,7 @@ async def product_name_chosen(message: Message, state: FSMContext, bot: Bot):
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id + 1)
     await state.set_state(GetProductInfo.choosing_act)
 
+
 @router.message(StateFilter(GetProductInfo.choosing_product_name))
 async def product_name_chosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(
@@ -164,6 +201,7 @@ async def product_name_chosen_incorrectly(message: Message, state: FSMContext):
     )
     await state.set_state(GetProductInfo.choosing_category)
     await message.answer(text=strings.select_product_name2, reply_markup=kb.categories2)
+
 
 @router.message(F.text)
 async def get_help(message: Message, bot: Bot):
@@ -178,7 +216,6 @@ async def get_help(message: Message, bot: Bot):
         manager.get_user_by_id(id=message.from_user.id).in_chat = True
         await message.answer(strings.get_help, reply_markup=types.ReplyKeyboardRemove())
         return
-
 
     if manager.is_admin_with_adding(info=message.from_user):
         # Сообщение от админа
@@ -199,7 +236,8 @@ async def get_help(message: Message, bot: Bot):
         user = admin.selected_user
         admin.send_message(message=message.text, to_user=user)
         user.new_message_from_admin(message=message.text, sender=admin)
-        await bot.send_message(chat_id=user.info.id, text=Formatter.new_messages_count(len(user.new_messages)), reply_markup=kb.user_show_message())
+        await bot.send_message(chat_id=user.info.id, text=Formatter.new_messages_count(len(user.new_messages)),
+                               reply_markup=kb.user_show_message())
     else:
         # Сообщение от юзверя
         user = manager.get_user(info=message.from_user)
@@ -210,8 +248,10 @@ async def get_help(message: Message, bot: Bot):
             user.send_message(message=message.text, to_admin=admin)
             admin.new_message_from_user(message=message.text, sender=user)
             button = [InlineKeyboardButton(text=strings.show_button, callback_data="new_messages")]
-            await bot.send_message(chat_id=admin.info.id, text=Formatter.new_messages_count(len(admin.new_messages)), reply_markup=InlineKeyboardMarkup(inline_keyboard=[button]))
+            await bot.send_message(chat_id=admin.info.id, text=Formatter.new_messages_count(len(admin.new_messages)),
+                                   reply_markup=InlineKeyboardMarkup(inline_keyboard=[button]))
         await message.answer(text=strings.message_has_send_to_admin)
+
 
 @router.callback_query(F.data == 'help')
 async def get_help(callback_query: types.CallbackQuery, bot: Bot):
@@ -222,6 +262,7 @@ async def get_help(callback_query: types.CallbackQuery, bot: Bot):
     user.in_chat = True
     await bot.answer_callback_query(callback_query.id)
     await bot.send_message(callback_query.from_user.id, strings.get_help)
+
 
 @router.callback_query(F.data == "new_messages")
 async def get_new_messages_list(callback_query: types.CallbackQuery, bot: Bot):
@@ -236,6 +277,7 @@ async def get_new_messages_list(callback_query: types.CallbackQuery, bot: Bot):
     await bot.delete_message(chat_id=admin.info.id, message_id=message_id)
     await bot.send_message(chat_id=admin.info.id, text=strings.new_messages, reply_markup=keyboard)
 
+
 @router.callback_query(F.data == "all_chatmates")
 async def get_all_chatmates(callback_query: types.CallbackQuery, bot: Bot):
     admin = manager.get_admin_by_id(id=callback_query.from_user.id)
@@ -248,6 +290,7 @@ async def get_all_chatmates(callback_query: types.CallbackQuery, bot: Bot):
     message_id = callback_query.message.message_id
     await bot.delete_message(chat_id=admin.info.id, message_id=message_id)
     await bot.send_message(chat_id=admin.info.id, text=strings.all_chats, reply_markup=keyboard)
+
 
 @router.callback_query(F.data.contains("chatmate"))
 async def select_user(callback_query: types.CallbackQuery, bot: Bot):
@@ -263,11 +306,15 @@ async def select_user(callback_query: types.CallbackQuery, bot: Bot):
     await bot.delete_message(chat_id=admin.info.id, message_id=message_id)
 
     if len(new_messages) > 0:
-        await bot.send_message(chat_id=admin.info.id, text=new_messages, reply_markup=kb.admin_chat_with_user_keyboard())
+        await bot.send_message(chat_id=admin.info.id, text=new_messages,
+                               reply_markup=kb.admin_chat_with_user_keyboard())
         return
     chat_history = admin.chat_with_user()
-    reply_markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=strings.back_button, callback_data="unselect_user")]])
+    reply_markup = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text=strings.back_button, callback_data="unselect_user")]])
     await bot.send_message(chat_id=admin.info.id, text=chat_history, reply_markup=reply_markup)
+
+
 @router.callback_query(F.data == "unselect_user")
 async def unselect_user(callback_query: types.CallbackQuery, bot: Bot):
     admin = manager.get_admin_by_id(id=callback_query.from_user.id)
@@ -278,6 +325,7 @@ async def unselect_user(callback_query: types.CallbackQuery, bot: Bot):
         await get_new_messages_list(callback_query=callback_query, bot=bot)
     else:
         await get_all_chatmates(callback_query=callback_query, bot=bot)
+
 
 @router.callback_query(F.data.contains("chat_history"))
 async def get_new_messages_list(callback_query: types.CallbackQuery, bot: Bot):
@@ -290,6 +338,7 @@ async def get_new_messages_list(callback_query: types.CallbackQuery, bot: Bot):
     message_id = callback_query.message.message_id
     await bot.delete_message(chat_id=admin.info.id, message_id=message_id)
     await bot.send_message(chat_id=admin.info.id, text=chat_history, reply_markup=kb.admin_chat_with_user_keyboard())
+
 
 @router.callback_query(F.data == "user_show_new_message")
 async def user_show_new_message(callback_query: types.CallbackQuery, bot: Bot):

@@ -12,8 +12,13 @@ keyboard1_admin = [
     [KeyboardButton(text=strings.get_instruction)],
     [KeyboardButton(text=strings.get_help1)],
     [KeyboardButton(text=strings.add_admin)],
+    [KeyboardButton(text=strings.admins_list)]
 ]
-
+keyboard2_admin = [
+    [KeyboardButton(text=strings.add_admin)],
+    [KeyboardButton(text=strings.delete_admin)]
+]
+keyboard2_admin = ReplyKeyboardMarkup(keyboard=keyboard2_admin, resize_keyboard=True)
 categories = storage_class.getCategories()
 categories2 = [[KeyboardButton(text=item)]for item in categories]
 categories2.append([KeyboardButton(text=strings.exit_button)])

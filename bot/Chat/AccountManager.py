@@ -40,8 +40,8 @@ class AccountManager:
 
     def add_user(self, user: User):
         # Если пользователь уже есть
-        if len(list(filter(lambda x: x.info.id != user.info.id, self.users))) > 0:
-            return
+        #if len(list(filter(lambda x: x.info.id != user.info.id, self.users))) > 0:
+            #return
 
         # # Если это админ
         # if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
@@ -50,8 +50,8 @@ class AccountManager:
 
     def add_admin(self, admin: Administrator):
         # Если админ уже есть
-        if len(list(filter(lambda x: x.admin.id != admin.info.id, self.admins))) > 0:
-            return
+        #if len(list(filter(lambda x: x.info.id != admin.info.id, self.admins))) > 0:
+         #   return
         self.admins.append(admin)
 
     def admins_contains_id(self, user_id) -> bool:
@@ -90,4 +90,3 @@ class AccountManager:
         if len(users) > 0:
             return users[0]
         return None
-
