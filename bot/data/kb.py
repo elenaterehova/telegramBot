@@ -10,8 +10,6 @@ keyboard1 = [
 ]
 keyboard1_admin = [
     [KeyboardButton(text=strings.get_instruction)],
-    [KeyboardButton(text=strings.get_help1)],
-    [KeyboardButton(text=strings.add_admin)],
     [KeyboardButton(text=strings.admins_list)]
 ]
 keyboard2_admin = [
@@ -22,12 +20,13 @@ keyboard2_admin = ReplyKeyboardMarkup(keyboard=keyboard2_admin, resize_keyboard=
 categories = storage_class.getCategories()
 categories2 = [[KeyboardButton(text=item)]for item in categories]
 categories2.append([KeyboardButton(text=strings.exit_button)])
-categories2.append([KeyboardButton(text=strings.get_help1)])
+categories3 = categories2.append([KeyboardButton(text=strings.get_help1)])
+#categories2.append([KeyboardButton(text=strings.get_help1)])
 
 help_keyboard = [
     [KeyboardButton(text='⏪ Выйти назад')]
 ]
-
+categories3 = ReplyKeyboardMarkup(keyboard=categories2, resize_keyboard=True)
 help_keyboard = ReplyKeyboardMarkup(keyboard=help_keyboard, resize_keyboard=True)
 keyboard1 = ReplyKeyboardMarkup(keyboard=keyboard1, resize_keyboard=True)
 keyboard1_admin = ReplyKeyboardMarkup(keyboard=keyboard1_admin, resize_keyboard=True, one_time_keyboard=True)

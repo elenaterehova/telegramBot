@@ -25,13 +25,14 @@ from bot.Chat.Formatter import Formatter
 
 manager = AccountManager()
 
-
 # Состояния пользователя
 class GetProductInfo(StatesGroup):
     choosing_act = State()
+    choosing_act_admin = State()
     choosing_category = State()
     choosing_product_name = State()
     get_help = State()
+    add_or_delete_admin = State()
     add_admin = State()
     delete_admin = State()
 
@@ -43,21 +44,19 @@ class GetProductInfo(StatesGroup):
 async def start_handler(message: Message, state: FSMContext):
     if not manager.is_user(info=message.from_user):
         manager.add_user(user=User(info=message.from_user))
-        print(manager.users)
     if not manager.is_admin(info=manager.get_user_by_id(int(1302324252)).info):
         manager.add_admin(admin=Administrator(info=manager.get_user_by_id(int(1302324252)).info))
 
     if manager.is_admin(info=message.from_user):
         await message.answer(text=text.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1_admin)
-        await state.set_state(GetProductInfo.add_admin)
+        await state.set_state(GetProductInfo.choosing_act_admin)
     else:
         await message.answer(
             text=text.greet.format(name=message.from_user.full_name),
             reply_markup=kb.keyboard1
         )
         await state.set_state(GetProductInfo.choosing_act)
-    print(manager.admins)
 
 
 @router.message(Command("help"))
@@ -67,43 +66,69 @@ async def help_command(message: Message, state: FSMContext):
     await state.set_state(GetProductInfo.get_help)
 
 
-@router.message(F.text == strings.add_admin)
-async def add_admin_id(message: Message, bot: Bot, state: FSMContext):
-    await message.answer(text='Чтобы добавить администратора, введите ID:', reply_markup=None)
-    await state.set_state(GetProductInfo.add_admin)
+@router.message(GetProductInfo.choosing_act_admin)
+async def admin_act_chosen(message: Message, state: FSMContext):
+    if message.text == strings.get_instruction:
+        await message.answer(text=text.get_category, reply_markup=kb.categories2)
+        await state.set_state(GetProductInfo.choosing_category)
 
-@router.message(F.text == strings.admins_list)
-async def show_admins_list(message: Message, bot: Bot, state: FSMContext):
     if message.text == strings.admins_list:
         admins_names = ''
         for admin in manager.admins:
             admins_names += admin.info.full_name
-        print(admins_names)
         await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
                              reply_markup=kb.keyboard2_admin)
+        await state.set_state(GetProductInfo.add_or_delete_admin)
+
+@router.message(GetProductInfo.add_or_delete_admin)
+async def add_or_delete(message: Message, bot: Bot, state: FSMContext):
+    if message.text == strings.add_admin:
+        await message.answer(text='Введите ID пользователя, которого хотите добавить в список Администраторов:',
+                             reply_markup=None)
+        await state.set_state(GetProductInfo.add_admin)
+    if message.text == strings.delete_admin:
+        await message.answer(text='Введите ID Администратора, которого хотите удалить из списка Администраторов: ',
+                             reply_markup=None)
+        await state.set_state(GetProductInfo.delete_admin)
+
 @router.message(GetProductInfo.add_admin)
 async def added_admin_id(message: Message, bot: Bot, state: FSMContext):
     try:
         if manager.is_admin(info=manager.get_user_by_id(id=int(message.text)).info):
             await message.answer(text='Пользователь уже является Администратором.')
+            admins_names = ''
+            for admin in manager.admins:
+                admins_names += admin.info.full_name
+            await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
+                                 reply_markup=kb.keyboard1_admin)
+            await state.set_state(GetProductInfo.choosing_act_admin)
         else:
             manager.add_admin(admin=Administrator(info=manager.get_user_by_id(id=int(message.text)).info))
-            await message.answer(text='Пользователь добавлен в Администраторы.', reply_markup=None)
+            await message.answer(text='Пользователь добавлен в Администраторы.')
+            admins_names = ''
+            for admin in manager.admins:
+                admins_names += admin.info.full_name
+            await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
+                                 reply_markup=kb.keyboard1_admin)
+            await state.set_state(GetProductInfo.choosing_act_admin)
     except Exception as e:
         await message.answer(text='Пользователь не найден')
         print(e)
         print(message.text)
     await state.clear()
 
-@router.message(F.text == strings.delete_admin)
-async def delete_admin(message: Message, bot: Bot, state: FSMContext):
-    await message.answer(text='Введите ID Администратора, которого хотите удалить: ', reply_markup=None)
-
 @router.message(GetProductInfo.delete_admin)
-async def added_delete_id(message: Message, bot: Bot, state: FSMContext):
+async def added_admin_id_delete(message: Message, bot: Bot, state: FSMContext):
     id = int(message.text)
     manager.admins.remove(manager.get_admin_by_id(id=id))
-    await message.answer(text='Админситратор удален.')
+    await message.answer(text='Администратор удален.')
+    admins_names = ''
+    for admin in manager.admins:
+        admins_names += admin.info.full_name
+    await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
+                         reply_markup=kb.keyboard1_admin)
+    await state.set_state(GetProductInfo.choosing_act_admin)
+
 @router.message(GetProductInfo.get_help, F.text == '⏪ Выйти назад')
 async def back(message: Message, state: FSMContext):
     if message.text == '⏪ Выйти назад':
@@ -116,8 +141,13 @@ async def back(message: Message, state: FSMContext):
 @router.message(GetProductInfo.choosing_act)
 async def act_chosen(message: Message, state: FSMContext):
     if message.text == strings.get_instruction:
-        await message.answer(text=text.get_category, reply_markup=kb.categories2)
-        await state.set_state(GetProductInfo.choosing_category)
+        if manager.is_admin(info=manager.get_user_by_id(id=int(message.from_user.id)).info):
+            await message.answer(text=text.get_category, reply_markup=kb.categories2)
+            await state.set_state(GetProductInfo.choosing_category)
+        else:
+            await message.answer(text=text.get_category, reply_markup=kb.categories3)
+            await state.set_state(GetProductInfo.choosing_category)
+
     if message.text == strings.get_help1:
         # await message.answer(text.get_help, reply_markup=kb.help_keyboard)
         await message.answer(text.get_help, reply_markup=types.ReplyKeyboardRemove())
@@ -204,7 +234,7 @@ async def product_name_chosen_incorrectly(message: Message, state: FSMContext):
 
 
 @router.message(F.text)
-async def get_help(message: Message, bot: Bot):
+async def get_help(message: Message, bot: Bot, state: FSMContext):
     """Помощь от консультанта"""
     if message.text == strings.get_help1:
         user = manager.get_user(info=message.from_user)
@@ -251,6 +281,7 @@ async def get_help(message: Message, bot: Bot):
             await bot.send_message(chat_id=admin.info.id, text=Formatter.new_messages_count(len(admin.new_messages)),
                                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[button]))
         await message.answer(text=strings.message_has_send_to_admin)
+    await state.clear()
 
 
 @router.callback_query(F.data == 'help')
