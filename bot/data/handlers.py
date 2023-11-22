@@ -22,6 +22,7 @@ from bot.Chat.AccountManager import AccountManager
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
+from bot.data.Handlers.AdminsManagement import *
 
 manager = AccountManager()
 
@@ -40,12 +41,33 @@ class GetProductInfo(StatesGroup):
 # admin = Administrator(info=1302324252)
 # add_main_admin = manager.add_admin(admin=admin)
 
+
+@router.message(StateFilter(GetProductInfo.add_admin))
+async def find_user(message: Message, bot: Bot, state: FSMContext):
+    print("После 'Введите ID пользователя...'")
+    matches = manager.find_users(query=message.text)
+    if len(matches) > 0:
+        await bot.send_message(chat_id=message.from_user.id,
+                               text="Найденные пользователи",
+                               reply_markup=kb.add_admin_keyboard(users=matches))
+        await state.clear()
+    else:
+        await bot.send_message(chat_id=message.from_user.id,
+                               text="Пользователи не найдены. Попробуйте изменить запрос")
+        # await state.clear()
+
 @router.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
+    print(message.from_user.username)
+    print(message.from_user.id)
     if not manager.is_user(info=message.from_user):
         manager.add_user(user=User(info=message.from_user))
-    if not manager.is_admin(info=manager.get_user_by_id(int(1302324252)).info):
-        manager.add_admin(admin=Administrator(info=manager.get_user_by_id(int(1302324252)).info))
+
+    if message.from_user.id == 863813900:
+        manager.add_admin(admin=Administrator(info=message.from_user))
+
+    # if not manager.is_admin(info=manager.get_user_by_id(int(1302324252)).info):
+    #     manager.add_admin(admin=Administrator(info=manager.get_user_by_id(int(1302324252)).info))
 
     if manager.is_admin(info=message.from_user):
         await message.answer(text=text.greet.format(name=message.from_user.full_name),
@@ -75,7 +97,7 @@ async def admin_act_chosen(message: Message, state: FSMContext):
     if message.text == strings.admins_list:
         admins_names = ''
         for admin in manager.admins:
-            admins_names += admin.info.full_name
+            admins_names += admin.info.full_name + "\n"
         await message.answer(text=f'Список Администраторов:\n\n{admins_names}',
                              reply_markup=kb.keyboard2_admin)
         await state.set_state(GetProductInfo.add_or_delete_admin)
@@ -87,8 +109,8 @@ async def add_or_delete(message: Message, bot: Bot, state: FSMContext):
                              reply_markup=None)
         await state.set_state(GetProductInfo.add_admin)
     if message.text == strings.delete_admin:
-        await message.answer(text='Введите ID Администратора, которого хотите удалить из списка Администраторов: ',
-                             reply_markup=None)
+        await message.answer(text='Список администраторов',
+                             reply_markup=kb.delete_admin_keyboard(admins=manager.admins))
         await state.set_state(GetProductInfo.delete_admin)
 
 @router.message(GetProductInfo.add_admin)

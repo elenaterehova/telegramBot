@@ -33,6 +33,14 @@ from aiogram.types import user
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
 
+import difflib
+
+def similarity(s1, s2):
+  normalized1 = s1.lower()
+  normalized2 = s2.lower()
+  matcher = difflib.SequenceMatcher(None, normalized1, normalized2)
+  return matcher.ratio()
+
 class AccountManager:
     def __init__(self):
         self.users = []
@@ -40,18 +48,18 @@ class AccountManager:
 
     def add_user(self, user: User):
         # Если пользователь уже есть
-        #if len(list(filter(lambda x: x.info.id != user.info.id, self.users))) > 0:
-            #return
+        if len(list(filter(lambda x: x.info.id == user.info.id, self.users))) > 0:
+            return
 
-        # # Если это админ
-        # if len(list(filter(lambda x: x.info.id != user.info.id, self.admins))) > 0:
-        #     return
+        # Если это админ
+        if len(list(filter(lambda x: x.info.id == user.info.id, self.admins))) > 0:
+            return
         self.users.append(user)
 
     def add_admin(self, admin: Administrator):
         # Если админ уже есть
-        #if len(list(filter(lambda x: x.info.id != admin.info.id, self.admins))) > 0:
-         #   return
+        if len(list(filter(lambda x: x.info.id == admin.info.id, self.admins))) > 0:
+           return
         self.admins.append(admin)
 
     def admins_contains_id(self, user_id) -> bool:
@@ -90,3 +98,28 @@ class AccountManager:
         if len(users) > 0:
             return users[0]
         return None
+
+    def find_users(self, query: str) -> [User]:
+        by_username = list(filter(lambda x: similarity(str(x.info.id), query) > 0.85, self.users))
+
+        if len(by_username) > 0:
+            return by_username
+
+        by_first_name = list(filter(lambda x: similarity(x.info.first_name, query) > 0.85, self.users))
+        if len(by_first_name) > 0:
+            return by_first_name
+
+        by_last_name = list(filter(lambda x: similarity(x.info.last_name, query) > 0.85, self.users))
+        if len(by_last_name) > 0:
+            return by_last_name
+
+        def full_name(user: User) -> str:
+            result = ""
+            if user.info.first_name is not None:
+                result += user.info.first_name + " "
+            if user.info.last_name is not None:
+                result += user.info.last_name
+            return result
+
+        by_full_name = list(filter(lambda x: similarity(full_name(x), query) > 0.85, self.users))
+        return by_full_name

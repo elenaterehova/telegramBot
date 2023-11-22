@@ -3,6 +3,7 @@ from Storage import storage_class
 import text as strings
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
+from bot.Chat.Formatter import Formatter
 
 keyboard1 = [
     [KeyboardButton(text=strings.get_instruction)],
@@ -62,3 +63,17 @@ def admin_chat_with_user_keyboard() -> InlineKeyboardMarkup:
 def user_show_message() -> InlineKeyboardMarkup:
     show_button = [InlineKeyboardButton(text=strings.show_button, callback_data="user_show_new_message")]
     return InlineKeyboardMarkup(inline_keyboard=[show_button])
+
+def add_admin_keyboard(users: [User]) -> InlineKeyboardMarkup:
+    buttons = []
+    for user in users:
+        buttons.append([InlineKeyboardButton(text=Formatter.user_full_name(user),
+                                             callback_data=f"add_administrator:{user.info.id}")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def delete_admin_keyboard(admins: [Administrator]) -> InlineKeyboardMarkup:
+    buttons = []
+    for admin in admins:
+        buttons.append([InlineKeyboardButton(text=Formatter.user_full_name(admin),
+                                             callback_data=f"remove_administrator:{admin.info.id}")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
