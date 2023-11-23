@@ -39,7 +39,7 @@ class GetProductInfo(StatesGroup):
 
 
 # admin = Administrator(info=1302324252)
-# add_main_admin = manager.add_admin(admin=admin)
+# add_main_admin = manager.add_admin(admin=admin)863813900
 
 @router.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
