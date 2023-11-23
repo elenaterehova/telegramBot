@@ -45,9 +45,9 @@ async def add_administrator(callback_query: types.CallbackQuery, bot: Bot, state
         await bot.send_message(chat_id=callback_query.from_user.id, text=strings.general_error)
 
 @router.callback_query(F.data.contains("remove_administrator"))
-async def add_administrator(callback_query: types.CallbackQuery, bot: Bot, state: FSMContext):
+async def remove_administrator(callback_query: types.CallbackQuery, bot: Bot, state: FSMContext):
     id = int(callback_query.data.split(":")[1])
-    admin = manager.get_user_by_id(id=id)
+    admin = manager.get_admin_by_id(id=id)
     if admin is not None:
         manager.admins.remove(admin)
         await bot.send_message(chat_id=callback_query.from_user.id, text=strings.admin_removed)
