@@ -36,10 +36,16 @@ from bot.Chat.Administrator import Administrator
 import difflib
 
 def similarity(s1, s2):
-  normalized1 = s1.lower()
-  normalized2 = s2.lower()
-  matcher = difflib.SequenceMatcher(None, normalized1, normalized2)
-  return matcher.ratio()
+    if s1 is None or type(s1) != str:
+        return 0.0
+
+    if s2 is None or type(s2) != str:
+        return 0.0
+
+    normalized1 = s1.lower()
+    normalized2 = s2.lower()
+    matcher = difflib.SequenceMatcher(None, normalized1, normalized2)
+    return matcher.ratio()
 
 class AccountManager:
     def __init__(self):
@@ -61,6 +67,7 @@ class AccountManager:
         if len(list(filter(lambda x: x.info.id == admin.info.id, self.admins))) > 0:
            return
         self.admins.append(admin)
+        self.users = list(filter(lambda x: x.info.id != admin.info.id, self.users))
 
     def admins_contains_id(self, user_id) -> bool:
         return len(list(filter(lambda x: user_id == x.info.id, self.admins))) > 0
@@ -100,7 +107,7 @@ class AccountManager:
         return None
 
     def find_users(self, query: str) -> [User]:
-        by_username = list(filter(lambda x: similarity(str(x.info.id), query) > 0.85, self.users))
+        by_username = list(filter(lambda x: similarity(str(x.info.username), query) > 0.85, self.users))
 
         if len(by_username) > 0:
             return by_username
