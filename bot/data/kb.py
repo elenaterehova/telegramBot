@@ -21,13 +21,16 @@ keyboard2_admin = ReplyKeyboardMarkup(keyboard=keyboard2_admin, resize_keyboard=
 categories = storage_class.getCategories()
 categories2 = [[KeyboardButton(text=item)]for item in categories]
 categories2.append([KeyboardButton(text=strings.exit_button)])
-categories3 = categories2.append([KeyboardButton(text=strings.get_help1)])
-#categories2.append([KeyboardButton(text=strings.get_help1)])
+categories2.append([KeyboardButton(text=strings.get_help1)])
+
+
+categories2_admin = [[KeyboardButton(text=item)]for item in categories]
+categories2_admin.append([KeyboardButton(text=strings.exit_button)])
 
 help_keyboard = [
     [KeyboardButton(text='⏪ Выйти назад')]
 ]
-categories3 = ReplyKeyboardMarkup(keyboard=categories2, resize_keyboard=True)
+categories2_admin = ReplyKeyboardMarkup(keyboard=categories2_admin, resize_keyboard=True)
 help_keyboard = ReplyKeyboardMarkup(keyboard=help_keyboard, resize_keyboard=True)
 keyboard1 = ReplyKeyboardMarkup(keyboard=keyboard1, resize_keyboard=True)
 keyboard1_admin = ReplyKeyboardMarkup(keyboard=keyboard1_admin, resize_keyboard=True, one_time_keyboard=True)
@@ -38,17 +41,19 @@ iexit_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=stri
 def admin_users_list_keyboard(users: [User], admin: Administrator, switch_button: InlineKeyboardButton) -> InlineKeyboardMarkup:
     keyboard_buttons = []
     for user in users:
-        first_name = user.info.first_name
-        last_name = user.info.last_name
-        row = ""
-        if first_name is not None:
-            row += first_name
-        if last_name is not None:
-            row += " " + last_name
-        if first_name is None and last_name is None:
-            row = "Unknown"
-        button = [InlineKeyboardButton(text=row, callback_data=f"chatmate chat_id={user.info.id};admin_id={admin.info.id}")]
-        keyboard_buttons.append(button)
+        if user is not admin:
+            first_name = user.info.first_name
+            last_name = user.info.last_name
+            row = ""
+            if first_name is not None:
+                row += first_name
+            if last_name is not None:
+                row += " " + last_name
+            if first_name is None and last_name is None:
+                row = "Unknown"
+            button = [InlineKeyboardButton(text=row,
+                                           callback_data=f"chatmate chat_id={user.info.id};admin_id={admin.info.id}")]
+            keyboard_buttons.append(button)
     keyboard_buttons.append([switch_button])
     exit_button = [InlineKeyboardButton(text=strings.back_button, callback_data="unselect_user")]
     keyboard_buttons.append(exit_button)
