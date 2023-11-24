@@ -16,14 +16,14 @@ headers = {
 }
 
 
-class Interface(ABC):
+class DBConnectorInterface(ABC):
 
     @abstractmethod
     def getData(self):
         """Get bot from DB"""
 
 
-class DBConnector(Interface):
+class DBConnector(DBConnectorInterface):
     def getData(self):
         response = requests.post(url, headers=headers)
         return response

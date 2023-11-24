@@ -9,17 +9,15 @@ from aiogram.filters import Command, StateFilter, state
 from aiogram.fsm.context import FSMContext
 from urllib.request import urlretrieve
 from PIL import Image
-
-import kb
-import text as strings
-import Storage
+from bot.data import kb, strings
+from bot.data.Storage.Storage import storage_class
 from bot.data import strings
-from bot.data.Storage import storage_class
 from bot.data.handlers import router
 from bot.data.handlers import manager
 from bot.data.handlers import GetProductInfo
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
+from bot.data.handlers import main_admin_id
 
 @router.message(StateFilter(GetProductInfo.add_admin))
 async def find_user(message: Message, bot: Bot, state: FSMContext):
@@ -46,11 +44,14 @@ async def add_administrator(callback_query: types.CallbackQuery, bot: Bot, state
 
 @router.callback_query(F.data.contains("remove_administrator"))
 async def remove_administrator(callback_query: types.CallbackQuery, bot: Bot, state: FSMContext):
+    global main_admin_id
     id = int(callback_query.data.split(":")[1])
     admin = manager.get_admin_by_id(id=id)
     if admin is not None:
         manager.admins.remove(admin)
         await bot.send_message(chat_id=callback_query.from_user.id, text=strings.admin_removed)
+        if main_admin_id is not None and main_admin_id == id:
+            main_admin_id = None
         await state.clear()
     else:
         await bot.send_message(chat_id=callback_query.from_user.id, text=strings.general_error)

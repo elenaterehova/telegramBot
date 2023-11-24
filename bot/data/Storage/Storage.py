@@ -1,6 +1,7 @@
 from abc import ABC, ABCMeta, abstractmethod
 from bot.data.Storage.Cache import Cache
 from bot.data.Storage.Cache import CacheInterface
+from bot.data.Storage.DBConnector import DBConnectorInterface, DBConnector
 
 
 class StorageInterface(object):
@@ -10,7 +11,7 @@ class StorageInterface(object):
         self.id = None
 
     @abstractmethod
-    def getNames(self):
+    def getNames(self, name):
         """Get cached names list from Cache Class"""
 
     @abstractmethod
@@ -23,20 +24,45 @@ class StorageInterface(object):
 
 
 class Storage(StorageInterface, ABC):
-    def __init__(self, cache: CacheInterface):
+    def __init__(self, cache: CacheInterface, db: DBConnectorInterface):
+        super().__init__()
         self.cache = cache
+        self.db = db
+        self.request_count = 0
+
+    def getInfoFromDB(self):
+        data = self.db.getData(self)
+        data1 = data.json()
+        return data1
 
     def getNames(self, name):
-        names = self.cache.getNames(name)
+        names = self.cache.get_names(category_name=name)
+
+        if self.__update(data=names):
+            names = self.cache.get_names(category_name=name)
+
         return names
 
     def getCategories(self):
-        categories = self.cache.categories_names_list
+        categories = self.cache.get_categories()
+        if self.__update(data=categories):
+            categories = self.cache.get_categories()
         return categories
 
     def getProductByName(self, name):
-        product = self.cache.getProductByName(name)
+        product = self.cache.get_product_by_name(name)
+        if self.__update(data=product):
+            product = self.cache.get_product_by_name(name)
         return product
 
+    def __update(self, data):
+        self.request_count += 1
+        if self.request_count > 5000 or data is None or (type(data) is list and len(data) == 0):
+            data = self.db.getData().json()
+            self.cache.update_data(json=data)
+            self.request_count = 0
+            return True
+        return False
 
-storage_class = Storage(cache=Cache())
+
+storage_class = Storage(cache=Cache(), db=DBConnector())

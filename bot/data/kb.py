@@ -1,11 +1,9 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
-from Storage import storage_class
+from bot.data.Storage.Storage import storage_class
 import strings as strings
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
-
-categories = storage_class.getCategories()
 
 
 # -----USER KEYBOARDS-------------------------------------------------------------
@@ -18,6 +16,7 @@ def users_start_keyboard() -> ReplyKeyboardMarkup:
 
 
 def users_categories_keyboard() -> ReplyKeyboardMarkup:
+    categories = storage_class.getCategories()
     keyboard = [[KeyboardButton(text=item)] for item in categories]
     keyboard.append([KeyboardButton(text=strings.exit_button)])
     keyboard.append([KeyboardButton(text=strings.get_help_button)])
@@ -47,6 +46,7 @@ def admins_management_keyboard() -> ReplyKeyboardMarkup:
 
 
 def admins_categories_keyboard() -> ReplyKeyboardMarkup:
+    categories = storage_class.getCategories()
     keyboard = [[KeyboardButton(text=item)] for item in categories]
     keyboard.append([KeyboardButton(text=strings.exit_button)])
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
