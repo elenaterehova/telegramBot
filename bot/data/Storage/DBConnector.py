@@ -1,5 +1,4 @@
 import os
-import json
 import requests
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
@@ -27,6 +26,3 @@ class DBConnector(DBConnectorInterface):
     def getData(self):
         response = requests.post(url, headers=headers)
         return response
-
-
-data = DBConnector()
