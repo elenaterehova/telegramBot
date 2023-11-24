@@ -55,3 +55,5 @@ async def remove_administrator(callback_query: types.CallbackQuery, bot: Bot, st
     else:
         await bot.send_message(chat_id=callback_query.from_user.id, text=strings.general_error)
 
+# code review
+
