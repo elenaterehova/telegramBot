@@ -1,9 +1,6 @@
-import PIL
-from urllib.request import urlretrieve
-from PIL import Image
-import Cache
 from abc import ABC, ABCMeta, abstractmethod
-from Cache import Cache, cached_class
+from bot.data.Storage.Cache import Cache
+from bot.data.Storage.Cache import CacheInterface
 
 
 class StorageInterface(object):
@@ -26,17 +23,20 @@ class StorageInterface(object):
 
 
 class Storage(StorageInterface, ABC):
+    def __init__(self, cache: CacheInterface):
+        self.cache = cache
+
     def getNames(self, name):
-        names = cached_class.getNames(name)
+        names = self.cache.getNames(name)
         return names
 
     def getCategories(self):
-        categories = cached_class.categories_names_list
+        categories = self.cache.categories_names_list
         return categories
 
     def getProductByName(self, name):
-        product = cached_class.getProductByName(name)
+        product = self.cache.getProductByName(name)
         return product
 
 
-storage_class = Storage()
+storage_class = Storage(cache=Cache())

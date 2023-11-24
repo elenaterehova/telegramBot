@@ -10,7 +10,6 @@ from urllib.request import urlretrieve
 import cachetools
 from PIL import Image
 
-
 class CacheInterface(object):
     __metaclass__ = ABCMeta
 
@@ -35,7 +34,6 @@ class CacheInterface(object):
 
 
 class Cache(CacheInterface):
-
     def __init__(self):
         super().__init__()
         self.categories_names = None

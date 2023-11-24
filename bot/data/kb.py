@@ -6,11 +6,11 @@ from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter
 
 keyboard1 = [
-    [KeyboardButton(text=strings.get_instruction)],
-    [KeyboardButton(text=strings.get_help1)],
+    [KeyboardButton(text=strings.get_instruction_button)],
+    [KeyboardButton(text=strings.get_help_button)],
 ]
 keyboard1_admin = [
-    [KeyboardButton(text=strings.get_instruction)],
+    [KeyboardButton(text=strings.get_instruction_button)],
     [KeyboardButton(text=strings.admins_list)]
 ]
 keyboard2_admin = [
@@ -21,7 +21,7 @@ keyboard2_admin = ReplyKeyboardMarkup(keyboard=keyboard2_admin, resize_keyboard=
 categories = storage_class.getCategories()
 categories2 = [[KeyboardButton(text=item)]for item in categories]
 categories2.append([KeyboardButton(text=strings.exit_button)])
-categories2.append([KeyboardButton(text=strings.get_help1)])
+categories2.append([KeyboardButton(text=strings.get_help_button)])
 
 
 categories2_admin = [[KeyboardButton(text=item)]for item in categories]
