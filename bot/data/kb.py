@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 from Storage import storage_class
-import text as strings
+import strings as strings
 from bot.Chat.User import User
 from bot.Chat.Administrator import Administrator
 from bot.Chat.Formatter import Formatter

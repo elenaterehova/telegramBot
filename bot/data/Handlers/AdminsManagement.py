@@ -13,7 +13,7 @@ from PIL import Image
 import kb
 import text as strings
 import Storage
-from bot.data import text
+from bot.data import strings
 from bot.data.Storage import storage_class
 from bot.data.handlers import router
 from bot.data.handlers import manager

@@ -11,9 +11,9 @@ from aiogram.fsm.context import FSMContext
 from urllib.request import urlretrieve
 from PIL import Image
 import kb
-import text as strings
+import strings
 import Storage
-from bot.data import text
+from bot.data import strings
 from bot.data.Storage import storage_class
 
 router = Router()
@@ -53,12 +53,12 @@ async def start_handler(message: Message, state: FSMContext):
     #     manager.add_admin(admin=Administrator(info=manager.get_user_by_id(int(1302324252)).info))
 
     if manager.is_admin(info=message.from_user):
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1_admin)
         await state.set_state(GetProductInfo.choosing_act_admin)
     else:
         await message.answer(
-            text=text.greet.format(name=message.from_user.full_name),
+            text=strings.greet.format(name=message.from_user.full_name),
             reply_markup=kb.keyboard1
         )
         await state.set_state(GetProductInfo.choosing_act)
@@ -69,7 +69,7 @@ async def help_command(message: Message, state: FSMContext):
     if manager.is_admin(info=message.from_user):
         await message.answer(text='Вы Администратор. Команда реализована только для пользователей.')
     else:
-        await message.answer(text=text.get_help,
+        await message.answer(text=strings.get_help,
                              reply_markup=kb.help_keyboard)
         await state.set_state(GetProductInfo.get_help)
 
@@ -77,7 +77,7 @@ async def help_command(message: Message, state: FSMContext):
 @router.message(GetProductInfo.choosing_act_admin)
 async def admin_act_chosen(message: Message, state: FSMContext):
     if message.text == strings.get_instruction_button:
-        await message.answer(text=text.get_category, reply_markup=kb.categories2_admin)
+        await message.answer(text=strings.get_category, reply_markup=kb.categories2_admin)
         await state.set_state(GetProductInfo.choosing_category)
 
     if message.text == strings.admins_list:
@@ -142,7 +142,7 @@ async def add_or_delete(message: Message, bot: Bot, state: FSMContext):
 @router.message(GetProductInfo.get_help, F.text == '⏪ Выйти назад')
 async def back(message: Message, state: FSMContext):
     if message.text == '⏪ Выйти назад':
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1)
         await state.set_state(GetProductInfo.choosing_act)
 
@@ -151,29 +151,29 @@ async def back(message: Message, state: FSMContext):
 @router.message(GetProductInfo.choosing_act)
 async def act_chosen(message: Message, state: FSMContext):
     if message.text == strings.get_instruction_button:
-        await message.answer(text=text.get_category, reply_markup=kb.categories2)
+        await message.answer(text=strings.get_category, reply_markup=kb.categories2)
         await state.set_state(GetProductInfo.choosing_category)
 
     if message.text == strings.get_help_button:
         # await message.answer(text.get_help, reply_markup=kb.help_keyboard)
-        await message.answer(text.get_help, reply_markup=types.ReplyKeyboardRemove())
+        await message.answer(strings.get_help, reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(GetProductInfo.get_help)
 
 @router.message(GetProductInfo.choosing_category, F.text == strings.exit_button)
 async def back_from_categories(message: Message, bot: Bot, state: FSMContext):
     if manager.is_admin(info=message.from_user):
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1_admin)
         await state.set_state(GetProductInfo.choosing_act_admin)
     else:
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1)
         await state.set_state(GetProductInfo.choosing_act)
 
 @router.message(GetProductInfo.get_help, F.text == strings.exit_button)
 async def back(message: Message, state: FSMContext):
     if message.text == strings.exit_button:
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1)
         await state.set_state(GetProductInfo.choosing_act)
 
@@ -196,7 +196,7 @@ async def category_chosen(message: Message, state: FSMContext):
 @router.message(GetProductInfo.choosing_category, F.text == strings.exit_button)
 async def back(message: Message, state: FSMContext):
     if message.text == strings.exit_button:
-        await message.answer(text=text.greet.format(name=message.from_user.full_name),
+        await message.answer(text=strings.greet.format(name=message.from_user.full_name),
                              reply_markup=kb.keyboard1)
         await state.set_state(GetProductInfo.choosing_act)
 
@@ -204,7 +204,7 @@ async def back(message: Message, state: FSMContext):
 @router.message(GetProductInfo.choosing_category, F.text == strings.get_help_button)
 async def help(message: Message, state: FSMContext):
     if message.text == strings.get_help_button:
-        await message.answer(text=text.get_help,
+        await message.answer(text=strings.get_help,
                              reply_markup=kb.help_keyboard)
         await state.set_state(GetProductInfo.get_help)
 
@@ -222,17 +222,17 @@ async def category_chosen_incorrectly(message: Message):
 async def back(message: Message, state: FSMContext):
     if message.text == strings.exit_button:
         if manager.is_admin(info=message.from_user):
-            await message.answer(text=text.get_category, reply_markup=kb.categories2_admin)
+            await message.answer(text=strings.get_category, reply_markup=kb.categories2_admin)
             await state.set_state(GetProductInfo.choosing_category)
         else:
-            await message.answer(text=text.get_category, reply_markup=kb.categories2)
+            await message.answer(text=strings.get_category, reply_markup=kb.categories2)
             await state.set_state(GetProductInfo.choosing_category)
 
 
 @router.message(GetProductInfo.choosing_product_name, F.text == strings.get_help_button)
 async def help(message: Message, state: FSMContext):
     if message.text == strings.get_help_button:
-        await message.answer(text=text.get_help, reply_markup=kb.help_keyboard)
+        await message.answer(text=strings.get_help, reply_markup=kb.help_keyboard)
         await state.set_state(GetProductInfo.get_help)
 
 
