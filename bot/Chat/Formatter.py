@@ -1,4 +1,6 @@
 from bot.Chat.User import User
+
+
 class Formatter:
     @classmethod
     def new_messages_count(cls, count):

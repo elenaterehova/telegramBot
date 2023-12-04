@@ -32,6 +32,8 @@
 import string
 
 from bot.Chat.ChatHistory import ChatHistory
+
+
 class Administrator:
     def __init__(self, info):
         self.info = info
@@ -52,8 +54,10 @@ class Administrator:
         self.chat_history.append(chat_message)
 
     def chat_with_user(self) -> string:
-        old_messages = list(filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.chat_history))
-        new_messages = list(filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.new_messages))
+        old_messages = list(
+            filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.chat_history))
+        new_messages = list(
+            filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.new_messages))
         result = ""
         for message in old_messages + new_messages:
             result += message.formatted(sender_is_me=message.sender == self, respond="Сообщение от")
@@ -62,7 +66,8 @@ class Administrator:
         return result
 
     def show_new_messages(self) -> string:
-        new_messages = list(filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.new_messages))
+        new_messages = list(
+            filter(lambda x: x.sender.info.id == self.selected_user.info.id or x.sender == self, self.new_messages))
         result = ""
         for message in new_messages:
             self.chat_history.append(message)
@@ -80,9 +85,11 @@ class Administrator:
     def new_chatmates(self):
         new_messages = list(map(lambda x: x.sender, self.new_messages))
         return list(set(new_messages))
+
     def all_chatmates(self):
         new_messages = list(map(lambda x: x.sender, self.new_messages + self.chat_history))
         return list(set(new_messages))
+
     def select_user(self, user):
         self.selected_user = user
 

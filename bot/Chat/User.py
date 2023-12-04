@@ -20,6 +20,7 @@
 import string
 from bot.Chat.ChatHistory import ChatHistory
 
+
 class User:
     def __init__(self, info):
         self.info = info

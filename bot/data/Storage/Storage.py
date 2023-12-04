@@ -31,7 +31,7 @@ class Storage(StorageInterface, ABC):
         self.request_count = 0
 
     def getInfoFromDB(self):
-        data = self.db.getData(self)
+        data = self.db.getData()
         data1 = data.json()
         return data1
 
