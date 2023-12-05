@@ -1,7 +1,7 @@
 from abc import ABC, ABCMeta, abstractmethod
-from bot.data.Storage.Cache import Cache
-from bot.data.Storage.Cache import CacheInterface
-from bot.data.Storage.DBConnector import DBConnectorInterface, DBConnector
+from bot.storage.Cache import Cache
+from bot.storage.Cache import CacheInterface
+from bot.storage.DBConnector import DBConnectorInterface, DBConnector
 
 
 class StorageInterface(object):

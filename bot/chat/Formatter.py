@@ -1,4 +1,4 @@
-from bot.Chat.User import User
+from bot.chat.User import User
 
 
 class Formatter:

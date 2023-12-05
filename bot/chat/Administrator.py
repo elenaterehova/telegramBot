@@ -31,7 +31,7 @@
 #
 import string
 
-from bot.Chat.ChatHistory import ChatHistory
+from bot.chat.ChatHistory import ChatHistory
 
 
 class Administrator:

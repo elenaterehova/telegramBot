@@ -5,12 +5,12 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.utils.chat_action import ChatActionMiddleware
-from bot.Handlers.General import router
-from bot.Handlers import *
+from bot.handlers.General import router
+from bot.handlers import *
 from dotenv import load_dotenv
 
-from bot.Handlers.admin import Admin, AdminsManagement, AdminSupportChat
-from bot.Handlers.user import User
+from bot.handlers.admin import Admin, AdminsManagement, AdminSupportChat
+from bot.handlers.user import User
 
 load_dotenv()
 

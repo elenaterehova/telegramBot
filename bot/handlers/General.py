@@ -1,13 +1,14 @@
-from aiogram import types, F, Bot, Router
+from aiogram import F, Bot, Router
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, Message
 from aiogram.filters import Command, StateFilter
-from bot.data.Storage.Storage import storage_class
+from bot.storage.Storage import storage_class
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from bot.Chat.User import User
-from bot.Chat.Administrator import Administrator
-from bot.Chat.AccountManager import AccountManager
-from bot.data import kb, strings
+from bot.chat.User import User
+from bot.chat.Administrator import Administrator
+from bot.chat.AccountManager import AccountManager
+from bot.strings import strings
+from bot.keyboards import kb
 
 #863813900
 #1302324252

@@ -1,6 +1,5 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod, ABC
 from aiogram.types import URLInputFile
-from bot.data.Storage.DBConnector import *
 
 
 class CacheInterface(object):

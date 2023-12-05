@@ -14,7 +14,7 @@ product_doesnot_find  = "Товар не найден.\n\nПожалуйста, 
 loading_instruction   = 'Загружаю инструкцию, подождите...'
 
 
-# === Chat ====
+# === chat ====
 all_chats                 = 'Показать все переписки'
 new_messages              = 'Новые сообщения'
 only_new_messages         = 'Показать только новые сообщения'

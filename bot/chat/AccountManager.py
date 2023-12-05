@@ -30,8 +30,8 @@
 
 from typing import Optional
 from aiogram.types import user
-from bot.Chat.User import User
-from bot.Chat.Administrator import Administrator
+from bot.chat.User import User
+from bot.chat.Administrator import Administrator
 
 import difflib
 

@@ -1,4 +1,6 @@
-from bot.Handlers.General import *
+from aiogram import types
+
+from bot.handlers.General import *
 
 router = Router()
 

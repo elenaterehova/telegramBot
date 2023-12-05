@@ -1,8 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from bot.Chat.User import User
-from bot.Chat.Formatter import Formatter
-from bot.Handlers.admin.AdminsManagement import *
-from bot.Handlers.General import states
+from bot.chat.Formatter import Formatter
+from bot.handlers.admin.AdminsManagement import *
+from bot.handlers.General import states
 
 router = Router()
 main_admin_id = 1302324252

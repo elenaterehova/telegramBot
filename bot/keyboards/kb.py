@@ -1,9 +1,9 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
-from bot.data.Storage.Storage import storage_class
-import strings as strings
-from bot.Chat.User import User
-from bot.Chat.Administrator import Administrator
-from bot.Chat.Formatter import Formatter
+from bot.storage.Storage import storage_class
+from bot.strings import strings as strings
+from bot.chat.User import User
+from bot.chat.Administrator import Administrator
+from bot.chat.Formatter import Formatter
 
 
 # -----USER KEYBOARDS-------------------------------------------------------------

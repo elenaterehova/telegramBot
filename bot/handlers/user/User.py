@@ -1,5 +1,4 @@
-from aiogram import Router
-from bot.Handlers.General import *
+from bot.handlers.General import *
 
 router = Router()
 

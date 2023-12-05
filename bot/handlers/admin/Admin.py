@@ -1,5 +1,5 @@
-from bot.Handlers.admin.AdminsManagement import *
-from bot.Handlers.General import states, manager
+from bot.handlers.admin.AdminsManagement import *
+from bot.handlers.General import states, manager
 from aiogram import Router
 
 router = Router()

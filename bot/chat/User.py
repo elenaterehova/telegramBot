@@ -18,7 +18,7 @@
 #         Только новые сообщения от администратора
 
 import string
-from bot.Chat.ChatHistory import ChatHistory
+from bot.chat.ChatHistory import ChatHistory
 
 
 class User:
