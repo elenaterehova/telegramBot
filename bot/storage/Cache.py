@@ -1,5 +1,15 @@
+import io
 from abc import ABCMeta, abstractmethod, ABC
-from aiogram.types import URLInputFile
+from copy import copy
+from io import BytesIO
+
+import requests
+import urllib.request
+from urllib.request import urlopen
+import PIL
+from PIL import Image
+from aiogram.types import URLInputFile, InputFile, BufferedInputFile
+from aiogram.types import FSInputFile
 
 
 class CacheInterface(object):
@@ -22,7 +32,7 @@ class CacheInterface(object):
         pass
 
     @abstractmethod
-    def get_product_by_name(self, product_name) -> URLInputFile:
+    def get_product_by_name(self, product_name):
         pass
 
 
@@ -46,7 +56,8 @@ class Cache(CacheInterface, ABC):
     def get_categories(self) -> [str]:
         return self.__categories
 
-    def get_product_by_name(self, product_name) -> URLInputFile:
+    def get_product_by_name(self, product_name) -> BytesIO:
+        print('Cache get_product_by_name')
         return self.__products[product_name]
 
     def update_data(self, json):
@@ -88,7 +99,9 @@ class Cache(CacheInterface, ABC):
         results = data['results']
         for item in results:
             url = item['properties']['Instructions']['files'][0]['file']['url']
-            photo = URLInputFile(url)
+            photo1 = requests.get(url).content
+            photo = BufferedInputFile(photo1, filename='test')
             name = item['properties']['Name']['title'][0]['text']['content']
             self.__products[name] = photo
+
 

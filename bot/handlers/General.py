@@ -1,5 +1,8 @@
+import asyncio
+import logging
+
 from aiogram import F, Bot, Router
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, Message
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, Message, FSInputFile, BufferedInputFile
 from aiogram.filters import Command, StateFilter
 from bot.storage.Storage import storage_class
 from aiogram.fsm.state import StatesGroup, State
@@ -124,15 +127,18 @@ async def product_name_chosen(message: Message, state: FSMContext, bot: Bot):
     try:
         await message.answer(text=strings.loading_instruction)
         photo = storage_class.getProductByName(message.text)
+        await asyncio.sleep(1)
         if manager.is_admin(info=message.from_user):
-            await bot.send_photo(message.chat.id, photo=photo, reply_markup=kb.admins_start_keyboard())
+            await bot.send_photo(message.chat.id, photo, reply_markup=kb.admins_start_keyboard())
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id + 1)
             await state.set_state(states.choosing_act_admin)
         else:
             await bot.send_photo(message.chat.id, photo=photo, reply_markup=kb.users_start_keyboard())
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id + 1)
             await state.set_state(states.choosing_act)
+        print(photo)
     except Exception as e:
+        logging.exception(f"Error: {e}.")
         await bot.send_message(chat_id=message.chat.id, text='Товар не найден. Попробуйте снова.')
         print(e)
 
