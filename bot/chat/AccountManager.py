@@ -29,7 +29,6 @@
 #   – get_user_by_id(self, id) -> Optional[User]:
 
 from typing import Optional
-from aiogram.types import user
 from bot.chat.User import User
 from bot.chat.Administrator import Administrator
 

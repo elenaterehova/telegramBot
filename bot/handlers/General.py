@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiogram import F, Bot, Router
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, Message, FSInputFile, BufferedInputFile
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, Message
 from aiogram.filters import Command, StateFilter
 from bot.storage.Storage import storage_class
 from aiogram.fsm.state import StatesGroup, State
@@ -13,8 +13,7 @@ from bot.chat.AccountManager import AccountManager
 from bot.strings import strings
 from bot.keyboards import kb
 
-#863813900
-#1302324252
+
 router = Router()
 main_admin_id = 1302324252
 manager = AccountManager()

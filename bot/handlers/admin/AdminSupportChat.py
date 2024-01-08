@@ -5,11 +5,11 @@ from bot.handlers.General import states
 
 router = Router()
 main_admin_id = 1302324252
-manager = AccountManager()
 
 
 @router.message(F.text, StateFilter(states.get_help))
 async def get_help(message: Message, bot: Bot, state: FSMContext):
+    print(manager.admins)
     """Помощь от консультанта"""
     if message.text == strings.get_help_button:
         user = manager.get_user(info=message.from_user)
